@@ -1,0 +1,13 @@
+<div class="meta-row">
+  <div id="lastUpdated">Son güncelleme: —</div>
+  <div id="onlineBadge" class="status offline">Durum: Bilinmiyor</div>
+</div>
+
+<div class="input-row">
+    <input type="number" id="input1" placeholder="EUR" oninput="convert(true)" />
+    <button class="swap-btn" onclick="swap()">⇄</button>
+    <input type="number" id="input2" placeholder="TRY" oninput="convert(false)" />
+</div>
+
+<div class="update" id="updateBtn" onclick="fetchAndStoreRate(true)">🔄 Kurları Güncelle</div>
+<div class="hint">Offline çalışıyor: localStorage'taki son kaydı kullanır. İnternet olursa otomatik güncellenir.</div>
