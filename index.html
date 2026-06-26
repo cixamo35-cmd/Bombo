@@ -1,14 +1,69 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import './styles/theme.css';
+import { useEffect, useState } from "react";
+import { getEuroRate } from "./services/exchange";
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+import RateCard from "./components/RateCard";
+import EuroInput from "./components/EuroInput";
+import TlInput from "./components/TlInput";
+import UpdateButton from "./components/UpdateButton";
 
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+export default function App() {
+  const [rate, setRate] = useState(53);
+  const [euro, setEuro] = useState("1");
+  const [tl, setTl] = useState("53");
+
+  useEffect(() => {
+    loadRate();
+  }, []);
+
+  async function loadRate() {
+    const saved = localStorage.getItem("eurtry");
+
+    if (saved) {
+      const value = Number(saved);
+      setRate(value);
+      setTl((Number(euro) * value).toFixed(2));
+    }
+
+    try {
+      const current = await getEuroRate();
+
+      setRate(current);
+
+      localStorage.setItem("eurtry", current.toString());
+
+      setTl((Number(euro) * current).toFixed(2));
+    } catch {}
+  }
+
+  function euroChanged(value: string) {
+    setEuro(value);
+    setTl((Number(value || 0) * rate).toFixed(2));
+  }
+
+  function tlChanged(value: string) {
+    setTl(value);
+    setEuro((Number(value || 0) / rate).toFixed(2));
+  }
+
+  return (
+    <div className="container">
+
+      <RateCard rate={rate} />
+
+      <EuroInput
+        value={euro}
+        onChange={euroChanged}
+      />
+
+      <div className="arrow">↓</div>
+
+      <TlInput
+        value={tl}
+        onChange={tlChanged}
+      />
+
+      <UpdateButton onClick={loadRate} />
+
+    </div>
+  );
+}
